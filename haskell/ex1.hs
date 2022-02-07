@@ -49,6 +49,10 @@ mylength (x:y) = 1 + mylength y
 
 myString = "hello"
 
+myreverse :: [a] -> [a]
+myreverse [] = []
+myreverse (x:xs) = myreverse xs ++ [x]
+
 moreThanFourChars = [x | x <- stringList, length x > 3 ]
 
 -- 2.4 Tuples --
