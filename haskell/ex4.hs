@@ -1,24 +1,42 @@
--- simulate game implementation --
--- Idea --
--- simulateGameAux :: <Inital State> -> [Moves] -> String containing the final game state or any errors.
+import Data.Maybe
 
--- Initial State contains <cards>, <pawns1>, <pawns2>, <turn>, <sm1>, <sm2> --
--- Example input: (["Cobra","Rabbit","Rooster","Tiger","Monkey"],[(0,2),(0,0),(0,1),(0,3),(0,4)],[(4,2),(4,0),(4,1),(4,3),(4,4)],0,True,False)
+data Gender = Male | Female deriving Show
 
-data Card = Card { cardName :: String
-                 , moves :: [(Int, Int)]}
+data Person = Person { name :: String,
+                       gender :: Gender,
+                       age :: Integer
+                    } deriving Show
 
-data State = State { cards :: [Card]
-                   , pawns1 :: [(Int, Int)]
-                   , pawns2 :: [(Int, Int)]
-                   , turn :: Bool
-                   , sm1 :: Bool
-                   , sm2 :: Bool}
+data Course = Course { cName :: String
+                     , grade :: Maybe Integer
+                     , weight :: Float 
+                     } deriving Show 
 
---isValidMove pos1 pos2 name = moves (getCard name) 
-testMove :: (Num a, Eq a) => (a, a) -> (a, a) -> [(a, a)] -> Bool 
-testMove (_,_) (_,_) [] = False
-testMove (x1, y1) (x2, y2) ((a,b):xs) = ((x1+a, y1+b) == (x2, y2)) || testMove (x1, y1) (x2,y2) xs
+data Student = Student {  person :: Person
+                       ,  num :: String 
+                       ,  courses :: [Course]
+                       } deriving Show
 
---monkey :: Card
---monkey = Card {name="Monkey", moves=[(-1 , -1), (-1, (+1)), ((+1), -1), ((+1) , (+1))]}
+student1 = Student (Person "John" Male 20) "23232323" [(Course "Math" (Just 12) 0.8), (Course "Danish" (Just 12) 0.5)]
+student2 = Student (Person "Jill" Female 21) "23232324" [(Course "Math" (Just (-3)) 0.8), (Course "Danish" (Just 12) 0.5)]
+
+enrol :: Student -> String -> Float -> Student
+enrol s name weight 
+    | any ((== name) . cName) (courses s) = s
+    | otherwise = s { courses = (courses s) ++ [Course name Nothing weight] }
+
+greet :: Person -> String
+greet p = "Good morning " ++ name p
+
+hasVotingRight :: Person -> Bool
+hasVotingRight = (>= 18) . age 
+
+voters :: [Person] -> [Person]
+voters = filter hasVotingRight
+
+averageGrade :: Student -> Float
+averageGrade s = wsum / (fromIntegral $ length cs)
+    where 
+        cs = courses s
+        wsum = sum $ [fromInteger (fromJust (grade c)) * weight c | c <- cs, isJust (grade c)]
+
