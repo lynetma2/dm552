@@ -119,3 +119,5 @@ instance Functor Box where
 instance Functor PlayerList where
     fmap f (PlayerList xs) = PlayerList $ map f xs
 
+
+
